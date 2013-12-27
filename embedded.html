@@ -1,91 +1,175 @@
 <!DOCTYPE html>
 <html>
+<head>
+<title>YouTube ChromelessPlayer API Sample</title>
+
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="vendor/slider/css/slider.css" rel="stylesheet">
+
+<script src="vendor/jquery/jquery-1.10.2.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="vendor/slider/js/bootstrap-slider.js"></script>
+	
+</head>
 <body>
-	<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-	<a id='btn-play' href="javascript:void(0);" onclick="playVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span> Play</a> 
-	<a id='btn-pause' href="javascript:void(0);" onclick="pauseVideo();" class="btn btn-default"><span class="glyphicon glyphicon-pause"></span> Pause</a> 
-	<div id="player"></div>
-	<script>
-		// 2. This code loads the IFrame Player API code asynchronously.
-		var tag = document.createElement('script');
+<script>
+	// Load iframe api
+	var tag = document.createElement('script');
 
-		tag.src = "https://www.youtube.com/iframe_api";
-		var firstScriptTag = document.getElementsByTagName('script')[0];
-		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	tag.src = "https://www.youtube.com/iframe_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-		// 3. This function creates an <iframe> (and YouTube player)
-		//    after the API code downloads.
-		var player;
-		function onYouTubeIframeAPIReady() {
-			player = new YT.Player('player', {
-				height: '390',
-				width: '640',
-				playerVars: { 'autoplay': 1, 'controls': 0, 'html5': 1 },
-				videoId: 'M7lc1UVf-VE',
-				events: {
-					'onReady': onPlayerReady,
-					'onStateChange': onPlayerStateChange
-				}
-			});
-		}
+	// This function creates an <iframe> (and YouTube player)
+	// after the API code downloads.
+	var player;
+	function onYouTubeIframeAPIReady() {
+		player = new YT.Player('player', {
+			height: '390',
+			width: '640',
+			playerVars: { 'autoplay': 1, 'controls': 0, 'html5': 1 },
+			videoId: 'M7lc1UVf-VE',
+			events: {
+				'onReady': onPlayerReady,
+				'onStateChange': onPlayerStateChange
+			}
+		});
+		setInterval(updatePlayerInfo, 250);
+	}
 
-		// 4. The API will call this function when the video player is ready.
-		function onPlayerReady(event) {
-			event.target.playVideo();
-		}
+	// start video when player is ready
+	function onPlayerReady(event) {
+		event.target.playVideo();
+	}
 
-		// 5. The API calls this function when the player's state changes.
-		//    The function indicates that when playing a video (state=1),
-		//    the player should play for six seconds and then stop.
-		var done = false;
-		function onPlayerStateChange(event) {
-			if (event.data == YT.PlayerState.PLAYING && !done) {
-				setTimeout(stopVideo, 6000);
-				done = true;
-			}
+	// Log player state change
+	function onPlayerStateChange(event) {
+		$('#playerState').html(event.data);
+	}
+
+	// Display player Info
+	function updatePlayerInfo() {
+		// Also check that at least one function exists since when IE unloads the
+		// page, it will destroy the SWF before clearing the interval.
+		if(player && player.getDuration) {
+			$("#videoDuration").html(player.getDuration());
+			$("#videoCurrentTime").html(player.getCurrentTime());
+			$("#bytesTotal").html(player.getVideoBytesTotal());
+			$("#startBytes").html(player.getVideoStartBytes());
+			$("#bytesLoaded").html(player.getVideoBytesLoaded());
+			$("#volume").html(player.getVolume());
 		}
-		function stopVideo() {
-			player.stopVideo();
+	}
+	
+	// Allow the user to set the volume from 0-100
+	function setVideoVolume() {
+		var volume = parseInt($("#volumeSetting").data('slider-value'));
+		if(isNaN(volume) || volume < 0 || volume > 100) {
+			alert("Please enter a valid volume between 0 and 100.");
 		}
-		function playVideo() {
-			// $("#btn-play").removeClass('btn-default');
-			// $("#btn-pause").removeClass('btn-warning');
-			// $("#btn-play").addClass('btn-primary');
-			// $("#btn-pause").addClass('btn-default');
-			if (player) {
-				player.playVideo();
-			}
+		else if(player){
+			player.setVolume(volume);
 		}
-		
-		function pauseVideo() {
-			// $("#btn-pause").removeClass('btn-default');
-			// $("#btn-play").removeClass('btn-primary');
-			// $("#btn-pause").addClass('btn-warning');
-			// $("#btn-play").addClass('btn-default');
-			if (player) {
-				player.pauseVideo();
-			}
+	}
+
+
+	// Play Video on player
+	function playVideo() {
+		$("#btn-play").removeClass('btn-default');
+		$("#btn-pause").removeClass('btn-warning');
+		$("#btn-play").addClass('btn-primary');
+		$("#btn-pause").addClass('btn-default');
+		if (player) {
+			player.playVideo();
 		}
-		
-		function muteVideo() {
-			// $("#btn-mute").removeClass('btn-default');
-			// $("#btn-unmute").removeClass('btn-primary');
-			// $("#btn-mute").addClass('btn-warning');
-			// $("#btn-unmute").addClass('btn-default');
-			if(player) {
-				player.mute();
-			}
+	}
+	
+	// Pause Video on player
+	function pauseVideo() {
+		$("#btn-pause").removeClass('btn-default');
+		$("#btn-play").removeClass('btn-primary');
+		$("#btn-pause").addClass('btn-warning');
+		$("#btn-play").addClass('btn-default');
+		if (player) {
+			player.pauseVideo();
 		}
-		
-		function unMuteVideo() {
-			// $("#btn-unmute").removeClass('btn-default');
-			// $("#btn-mute").removeClass('btn-warning');
-			// $("#btn-unmute").addClass('btn-primary');
-			// $("#btn-mute").addClass('btn-default');
-			if(player) {
-				player.unMute();
-			}
+	}
+	
+	// Mute Video Sound
+	function muteVideo() {
+		$("#btn-mute").removeClass('btn-default');
+		$("#btn-unmute").removeClass('btn-primary');
+		$("#btn-mute").addClass('btn-warning');
+		$("#btn-unmute").addClass('btn-default');
+		if(player) {
+			player.mute();
 		}
-	</script>
+	}
+	
+	// unMute Video Sound
+	function unMuteVideo() {
+		$("#btn-unmute").removeClass('btn-default');
+		$("#btn-mute").removeClass('btn-warning');
+		$("#btn-unmute").addClass('btn-primary');
+		$("#btn-mute").addClass('btn-default');
+		if(player) {
+			player.unMute();
+		}
+	}
+	$(document).ready(function() {
+		$('.slider').slider().on('slideStop', function(ev) {
+			$('.slider').data('slider-value', ev.value);
+			unMuteVideo();
+			setVideoVolume();
+		});
+	});
+
+</script>
+<div class="container">
+	<div class='row'>
+		<div class='col-lg-5' style="margin: 25px 0px 25px;">
+			<img src="public/images/logo.png" width="200px" height="100px" class="img-thumbnail" />
+		</div>
+		<div class='col-lg-7' style="margin: 25px 0px 25px;">
+			<h2>Embedded HTML5 Player</h2>
+		</div>
+	</div>
+	<div class='row'>
+	<div id='videoInfo' class="col-lg-5">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Youtube Embedded controls</h3>
+			</div>
+			<div class="panel-body">
+				<p>Player state: <span id="playerState" class='label label-primary'>--</span></p>
+				<p>Current Time: <span id="videoCurrentTime" class='label label-success'>--:--</span></p>
+				<p>Duration: <span id="videoDuration">--:--</span></p>
+				<p>Bytes Total: <span id="bytesTotal">--</span> | Start Bytes: <span id="startBytes">--</span> | Bytes Loaded: <span id="bytesLoaded" class='label label-default'>--</span></p>
+				<p>&nbsp;</p>
+				<p>
+					<div class="btn-group"> 
+						<a id='btn-play' href="javascript:void(0);" onclick="playVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span></a> 
+						<a id='btn-pause' href="javascript:void(0);" onclick="pauseVideo();" class="btn btn-default"><span class="glyphicon glyphicon-pause"></span></a> 
+					</div>
+					<div class="btn-group"> 
+						<a id='btn-unmute' href="javascript:void(0);" onclick="unMuteVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-volume-up"></span></a>
+						<a id='btn-mute' href="javascript:void(0);" onclick="muteVideo();"  class="btn btn-default"><span class="glyphicon glyphicon-volume-off"></span></a> 
+					</div>
+				</p>
+				<p>
+					Volume : 
+					<input id="volumeSetting" type="text" class="slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" 
+						data-slider-value="100" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+					<span id="volume" style='margin-left: 30px;' class='label label-info'>--</span>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-7">
+		<div id="player"></div>
+	</div>
+	</div>
+</div>
+</body>
 </body>
 </html>

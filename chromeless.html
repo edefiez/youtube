@@ -23,14 +23,6 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 </script>    
 
 <script type="text/javascript">
-	/*
-	 * Chromeless player has no controls.
-	 */
-	
-	// Update a particular HTML element with a new value
-	function updateHTML(elmId, value) {
-		document.getElementById(elmId).innerHTML = value;
-	}
 	
 	// This function is called when an error is thrown by the player
 	function onPlayerError(errorCode) {
@@ -39,7 +31,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 	
 	// This function is called when the player changes state
 	function onPlayerStateChange(newState) {
-		updateHTML("playerState", newState);
+		$("#playerState").html(newState);
 	}
 	
 	// Display information about the current state of the player
@@ -67,6 +59,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 		}
 	}
 	
+	// Play Video on player
 	function playVideo() {
 		$("#btn-play").removeClass('btn-default');
 		$("#btn-pause").removeClass('btn-warning');
@@ -77,6 +70,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 		}
 	}
 	
+	// Pause Video on player
 	function pauseVideo() {
 		$("#btn-pause").removeClass('btn-default');
 		$("#btn-play").removeClass('btn-primary');
@@ -87,6 +81,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 		}
 	}
 	
+	// Mute Video Sound
 	function muteVideo() {
 		$("#btn-mute").removeClass('btn-default');
 		$("#btn-unmute").removeClass('btn-primary');
@@ -97,6 +92,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 		}
 	}
 	
+	// unMute Video Sound
 	function unMuteVideo() {
 		$("#btn-unmute").removeClass('btn-default');
 		$("#btn-mute").removeClass('btn-warning');
@@ -119,10 +115,13 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 	
 		ytplayer.addEventListener("onStateChange", "onPlayerStateChange");
 		ytplayer.addEventListener("onError", "onPlayerError");
-		//Load an initial video into the player
-//		ytplayer.loadVideoById("cyTDjPERnZQ");
+		// Load an initial video into the player 
+		// You can cue (load video but doesnt play automaticly) or load (load video and start playing) video
+		// by Id or a playList
+
+		/* ytplayer.loadVideoById("cyTDjPERnZQ"); */
+		/* ytplayer.cueVideoById(["cyTDjPERnZQ","scXgbVaUhv4"]); */
 		ytplayer.loadPlaylist(["q2GC_5Ax08Q","OIBzjTiGyjs"]);
-//		ytplayer.cueVideoById(["cyTDjPERnZQ","scXgbVaUhv4"]);
 	}
 	
 	// The "main method" of this sample. Called when someone clicks "Run".
@@ -148,8 +147,13 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 </head>
 <body>
 <div class="container">
-	<div class='col-lg-12' style="margin: 25px 0px 25px;">
-		<img src="public/images/logo.png" width="200px" height="100px" class="img-thumbnail" />
+	<div class='row'>
+		<div class='col-lg-5' style="margin: 25px 0px 25px;">
+			<img src="public/images/logo.png" width="200px" height="100px" class="img-thumbnail" />
+		</div>
+		<div class='col-lg-7' style="margin: 25px 0px 25px;">
+			<h2>Flash Chromeless Player</h2>
+		</div>
 	</div>
 	<div id='videoInfo' class="col-lg-5">
 		<div class="panel panel-default">
@@ -175,7 +179,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 				<p>
 					Volume : 
 					<input id="volumeSetting" type="text" class="slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" 
-						data-slider-value="20" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide	w ">
+						data-slider-value="20" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
 					<span id="volume" class='label label-info'>--</span>
 				</p>
 			</div>
