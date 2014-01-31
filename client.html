@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>YouTube ChromelessPlayer API Sample</title>
+
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="vendor/slider/css/slider.css" rel="stylesheet">
+
+<script src="vendor/jquery/jquery-1.10.2.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="vendor/slider/js/bootstrap-slider.js"></script>
+
+<script src="lib/YTBeloolaClient.js"></script>
+	
+</head>
+<body>
+<script>
+var iframe;
+	function setVideoVolume() {
+		var volume = parseInt($("#volumeSetting").data('slider-value'));
+		if(isNaN(volume) || volume < 0 || volume > 100) {
+			alert("Please enter a valid volume between 0 and 100.");
+		}
+		else if(player){
+		iframe = document.getElementById('__iframe_player__');
+		iframe.contentWindow.postMessage('__Beloola_Play__', document.URL);
+		}
+	}
+
+	// Play Video on player
+	function playVideo() {
+		$("#btn-play").removeClass('btn-default');
+		$("#btn-pause").removeClass('btn-warning');
+		$("#btn-play").addClass('btn-primary');
+		$("#btn-pause").addClass('btn-default');
+		YTBeloolaClient.play();
+	}
+	
+	// Pause Video on player
+	function pauseVideo() {
+		$("#btn-pause").removeClass('btn-default');
+		$("#btn-play").removeClass('btn-primary');
+		$("#btn-pause").addClass('btn-warning');
+		$("#btn-play").addClass('btn-default');
+		YTBeloolaClient.pause();
+	}
+	
+	// Mute Video Sound
+	function muteVideo() {
+		$("#btn-mute").removeClass('btn-default');
+		$("#btn-unmute").removeClass('btn-primary');
+		$("#btn-mute").addClass('btn-warning');
+		$("#btn-unmute").addClass('btn-default');
+		YTBeloolaClient.mute();
+	}
+	
+	// unMute Video Sound
+	function unMuteVideo() {
+		$("#btn-unmute").removeClass('btn-default');
+		$("#btn-mute").removeClass('btn-warning');
+		$("#btn-unmute").addClass('btn-primary');
+		$("#btn-mute").addClass('btn-default');
+		YTBeloolaClient.unMute();
+	}
+	$(document).ready(function() {
+		$('.slider').slider().on('slideStop', function(ev) {
+			$('.slider').data('slider-value', ev.value);
+			unMuteVideo();
+			setVideoVolume();
+		});
+	});
+
+</script>
+<div class="container">
+	<div class='row'>
+		<div class='col-lg-5' style="margin: 25px 0px 25px;">
+			<img src="public/images/logo.png" width="200px" height="100px" class="img-thumbnail" />
+		</div>
+		<div class='col-lg-7' style="margin: 25px 0px 25px;">
+			<h2>Embedded HTML5 Player</h2>
+		</div>
+	</div>
+	<div class='row'>
+	<div id='videoInfo' class="col-lg-5">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Youtube Embedded controls</h3>
+			</div>
+			<div class="panel-body">
+				<p>
+					<div class="btn-group"> 
+						<a id='btn-play' href="javascript:void(0);" onclick="playVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span></a> 
+						<a id='btn-pause' href="javascript:void(0);" onclick="pauseVideo();" class="btn btn-default"><span class="glyphicon glyphicon-pause"></span></a> 
+					</div>
+					<div class="btn-group"> 
+						<a id='btn-unmute' href="javascript:void(0);" onclick="unMuteVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-volume-up"></span></a>
+						<a id='btn-mute' href="javascript:void(0);" onclick="muteVideo();"  class="btn btn-default"><span class="glyphicon glyphicon-volume-off"></span></a> 
+					</div>
+				</p>
+				<p>
+					Volume : 
+					<input id="volumeSetting" type="text" class="slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" 
+						data-slider-value="100" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+					<span id="volume" style='margin-left: 30px;' class='label label-info'>--</span>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-7">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">YouTube Iframe</h3>
+			</div>
+			<div class="panel-body" style='height: 330px;'>
+				<div id="player"></div>
+			</div>
+		<div>
+	</div>
+</div>
+<script type="text/javascript">
+	var YTBeloolaClient = new YTBeloolaClient('player', {
+		clientUrl: document.URL, 
+		serverUrl: "server.html",
+		height: "280px"
+	});
+</script>
+</body>
+</html>
