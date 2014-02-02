@@ -4,73 +4,52 @@
 </head>
 <body>
 <script>
-	// Load iframe api
-	var tag = document.createElement('script');
+	var player; 		// youtube player instance
+	var messageSource;	// client source to send postMessage response
 
+	// Load YouTube iframe api 
+	var tag = document.createElement('script');
 	tag.src = "https://www.youtube.com/iframe_api";
 	var firstScriptTag = document.getElementsByTagName('script')[0];
 	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-	// This function creates an <iframe> (and YouTube player)
-	// after the API code downloads.
-	var player;
+	// declare youtube player
 	function onYouTubeIframeAPIReady() {
 		player = new YT.Player('player', {
 			playerVars: { 'autoplay': 0, 'controls': 0, 'html5': 1 },
-			videoId: 'M7lc1UVf-VE',
-			events: {
-				'onReady': onPlayerReady,
-				'onStateChange': onPlayerStateChange
-			}
 		});
-	}
-
-	// start video when player is ready
-	function onPlayerReady(event) {
-		console.log('player is ready');
-	}
-
-	// Log player state change
-	function onPlayerStateChange(event) {
-		$('#playerState').html(event.data);
+		setInterval(updatePlayerInfo, 750);
 	}
 
 	// Display player Info
 	function updatePlayerInfo() {
-		// Also check that at least one function exists since when IE unloads the
-		// page, it will destroy the SWF before clearing the interval.
-		if(player && player.getDuration) {
-			$("#videoDuration").html(player.getDuration());
-			$("#videoCurrentTime").html(player.getCurrentTime());
-			$("#bytesTotal").html(player.getVideoBytesTotal());
-			$("#startBytes").html(player.getVideoStartBytes());
-			$("#bytesLoaded").html(player.getVideoBytesLoaded());
-			$("#volume").html(player.getVolume());
+		if(!player)		return;
+		if(!messageSource)	return;
+		// get player information
+		var info = {
+			duration: player.getDuration(),
+			currentTime: player.getCurrentTime()
 		}
+		// send player information to client with YTBeloola signature
+		messageSource.postMessage({ YTBeloola: info }, document.URL);
 	}
 	
-	// Allow the user to set the volume from 0-100
-	function setVideoVolume() {
-		var volume = parseInt($("#volumeSetting").data('slider-value'));
-		if(isNaN(volume) || volume < 0 || volume > 100) {
-			alert("Please enter a valid volume between 0 and 100.");
-		}
-		else if(player){
-			player.setVolume(volume);
-		}
-	}
-
 	window.addEventListener("message", function(event) {
 		var message	= event.data;
+		// only manage YTBeloola message signature
 		if(typeof message === "object" && Object.keys(message)[0] === 'YTBeloola') {
+			// build player commmand
 			var command = "player."+message.YTBeloola;
+			// eval command
 			if(player)	eval(command);
+			// save event source (message)
+			if(!messageSource) {
+				messageSource = event.source;
+			}
 		}
 	}, false);
 
 </script>
 <div id="player" width="100%" height="100%"></div>
-
-</body>
 </body>
 </html>

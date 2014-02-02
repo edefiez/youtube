@@ -16,24 +16,13 @@
 <body>
 <script>
 var iframe;
-	function setVideoVolume() {
-		var volume = parseInt($("#volumeSetting").data('slider-value'));
-		if(isNaN(volume) || volume < 0 || volume > 100) {
-			alert("Please enter a valid volume between 0 and 100.");
-		}
-		else if(player){
-		iframe = document.getElementById('__iframe_player__');
-		iframe.contentWindow.postMessage('__Beloola_Play__', document.URL);
-		}
-	}
-
 	// Play Video on player
 	function playVideo() {
 		$("#btn-play").removeClass('btn-default');
 		$("#btn-pause").removeClass('btn-warning');
 		$("#btn-play").addClass('btn-primary');
 		$("#btn-pause").addClass('btn-default');
-		YTBeloolaClient.play();
+		YTBeloolaClient.playVideo();
 	}
 	
 	// Pause Video on player
@@ -42,10 +31,18 @@ var iframe;
 		$("#btn-play").removeClass('btn-primary');
 		$("#btn-pause").addClass('btn-warning');
 		$("#btn-play").addClass('btn-default');
-		YTBeloolaClient.pause();
+		YTBeloolaClient.pauseVideo();
 	}
 	
-	// Mute Video Sound
+	function setVolume(volume) {
+		YTBeloolaClient.setVolume(volume);
+	}
+
+	function seekTo(seconds) {
+		YTBeloolaClient.seekTo(seconds);
+	}
+
+	// Mute Video Sounda
 	function muteVideo() {
 		$("#btn-mute").removeClass('btn-default');
 		$("#btn-unmute").removeClass('btn-primary');
@@ -62,13 +59,11 @@ var iframe;
 		$("#btn-mute").addClass('btn-default');
 		YTBeloolaClient.unMute();
 	}
-	$(document).ready(function() {
-		$('.slider').slider().on('slideStop', function(ev) {
-			$('.slider').data('slider-value', ev.value);
-			unMuteVideo();
-			setVideoVolume();
-		});
-	});
+	function updatePlayerInfo() {
+		var info = YTBeloolaClient.getPlayerInfo()
+		$("#videoDuration").html(info.duration);
+		$("#videoCurrentTime").html(info.currentTime);
+	}
 
 </script>
 <div class="container">
@@ -87,6 +82,8 @@ var iframe;
 				<h3 class="panel-title">Youtube Embedded controls</h3>
 			</div>
 			<div class="panel-body">
+				<p>Current Time: <span id="videoCurrentTime" class='label label-success'>--:--</span></p>
+				<p>Duration: <span id="videoDuration">--:--</span></p>
 				<p>
 					<div class="btn-group"> 
 						<a id='btn-play' href="javascript:void(0);" onclick="playVideo();" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span></a> 
@@ -98,10 +95,12 @@ var iframe;
 					</div>
 				</p>
 				<p>
-					Volume : 
-					<input id="volumeSetting" type="text" class="slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" 
-						data-slider-value="100" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
-					<span id="volume" style='margin-left: 30px;' class='label label-info'>--</span>
+					<label for="volumeSetting">Volume : </label>
+					<input id="volumeSetting" onChange="setVolume(this.value)" type="number" min="0" max="100" step="5" value ="100"/>
+				</p>
+				<p>
+					<label for="seek">Seek : </label>
+					<input id="seek" onChange="seekTo(this.value)" type="number" min="0"  step="5" value ="0"/>
 				</p>
 			</div>
 		</div>
@@ -118,11 +117,13 @@ var iframe;
 	</div>
 </div>
 <script type="text/javascript">
-	var YTBeloolaClient = new YTBeloolaClient('player', {
-		clientUrl: document.URL, 
-		serverUrl: "server.html",
-		height: "280px"
-	});
+var serverUrl		= "http://127.0.0.1:8000/server.html";
+var YTBeloolaClient 	= new YTBeloolaClient('player', serverUrl, {
+	height: "280px",
+	listenPlayerInfo: true,
+	video: "M7lc1UVf-VE"
+});
+setInterval(updatePlayerInfo, 500);
 </script>
 </body>
 </html>
