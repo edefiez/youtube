@@ -42,10 +42,11 @@ var YTBeloolaClient 	= new YTBeloolaClient('player', serverUrl, {
 });
 ```
 
-Vous pouvez egalement activer le mode plein écran en passant au constructeur le parametre `allowfullscreen` à `true`
+Vous pouvez egalement activer le mode plein écran en passant au constructeur le parametre `allowfullscreen` à `true`.
 Le mode plein écran sera activé par un double click sur la vidéo
 
 `YTBeloolaClient` vous permet d'envoyer les commandes de base au player `YouTube`
+
     - playVideo()
     - pauseVideo()
     - mute()
