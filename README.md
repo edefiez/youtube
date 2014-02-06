@@ -10,10 +10,9 @@ Deux fichiers d'exemples sont également inclus pour tester ces deux fichiers :
    - server.html
 
 
+### Coté client
 
-## Coté client
-
-1 - Inclure la librairie lib/YTBeloolaClient.js
+1 - Inclure la librairie `lib/YTBeloolaClient.js`
 
 ```html
 <script src="lib/YTBeloolaClient.js"></script>
@@ -29,9 +28,7 @@ var YTBeloolaClient 	= new YTBeloolaClient('player', serverUrl, {
 	video: "M7lc1UVf-VE"
 });
 ```
-
 ou 
-
 ```js
 var serverUrl		= "http://127.0.0.1:8000/server.html";
 var YTBeloolaClient 	= new YTBeloolaClient('player', serverUrl, {
@@ -48,7 +45,7 @@ var YTBeloolaClient 	= new YTBeloolaClient('player', serverUrl, {
 Vous pouvez egalement activer le mode plein écran en passant au constructeur le parametre `allowfullscreen` à `true`
 Le mode plein écran sera activé par un double click sur la vidéo
 
-YTBeloolaClient vous permet d'envoyer les commandes de base au player `YouTube`
+`YTBeloolaClient` vous permet d'envoyer les commandes de base au player `YouTube`
     - playVideo()
     - pauseVideo()
     - mute()
@@ -61,16 +58,16 @@ En activant `listenPlayerInfo` dans le constructeur vous pourrez via la méthode
 récupérer la durée de la vidéo demandée `duration` et la position actuelle de cette dernière `currentTime`
 
 
-## Coté Server
+### Coté Server
 
-1 - Inclure les librairies Youtube et lib/YTBeloolaServer.js
+1 - Inclure les librairies `YouTube Iframe API` et `lib/YTBeloolaServer.js`
 
 ```html
 	<script src="lib/YTBeloolaServer.js"></script>
 	<script src="https://www.youtube.com/iframe_api"></script>
 ```
 
-2 - Définir la fonction onYouTubeIframeAPIReady et y instancier la classe YTBeloolaServer
+2 - Définir la fonction `onYouTubeIframeAPIReady` et y instancier la classe `YTBeloolaServer`
 
 ```js
 	// declare youtube player
